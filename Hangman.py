@@ -12,12 +12,13 @@ WIDTH, HEIGHT = 800, 800
 WHITE = (255, 234, 210)
 BLACK = (15, 14, 27)
 BOX_PADDING = 10
-WBOX_PADDING = 25
+WBOX_PADDING = 20
 LETTER_BOX_PAD = 12
 LETTER_BOX_SPACING = 65
 LETTER_BOX_WIDTH, LETTER_BOX_HEIGHT = 50, 50
 SQUARE_UI_PAD = 75
 INNER_SQUARE_PAD = 8
+RED = (178,34,34)
 
 
 wordbank = [
@@ -27,20 +28,20 @@ wordbank = [
 ]
 
 
-welcome_font = pygame.font.SysFont("", 50)
-welcome_text = welcome_font.render("Welcome to Hangman!", True, WHITE)
+welcome_font = pygame.font.SysFont("", 44)
+welcome_text = welcome_font.render("WELCOME TO...", True, (178,34,34))
 welcome_box = pygame.Rect((WIDTH/2 - welcome_text.get_width()/2) - WBOX_PADDING, 50 - WBOX_PADDING, welcome_text.get_width() + WBOX_PADDING*2, welcome_text.get_height() + WBOX_PADDING*2)
 
 category_fonts = pygame.font.SysFont("Ariel", 50)
 category_text1 = category_fonts.render("Animals", True, BLACK)
 category_text2 = category_fonts.render("Food", True, BLACK)
 category_text3 = category_fonts.render("Geography", True, BLACK)
-category_box1 = pygame.Rect((WIDTH/2 - category_text1.get_width()/2) - BOX_PADDING, 200 - BOX_PADDING, category_text1.get_width() + BOX_PADDING * 2, category_text1.get_height() + BOX_PADDING*2)
-category_box2 = pygame.Rect((WIDTH/2 - category_text2.get_width()/2) - BOX_PADDING, 300 - BOX_PADDING, category_text2.get_width() + BOX_PADDING * 2, category_text2.get_height() + BOX_PADDING*2)
-category_box3 = pygame.Rect((WIDTH/2 - category_text3.get_width()/2) - BOX_PADDING, 400 - BOX_PADDING, category_text3.get_width() + BOX_PADDING * 2, category_text3.get_height() + BOX_PADDING*2)
+category_box1 = pygame.Rect((WIDTH/2 - category_text1.get_width()/2) - BOX_PADDING, 240 - BOX_PADDING, category_text1.get_width() + BOX_PADDING * 2, category_text1.get_height() + BOX_PADDING*2)
+category_box2 = pygame.Rect((WIDTH/2 - category_text2.get_width()/2) - BOX_PADDING, 340 - BOX_PADDING, category_text2.get_width() + BOX_PADDING * 2, category_text2.get_height() + BOX_PADDING*2)
+category_box3 = pygame.Rect((WIDTH/2 - category_text3.get_width()/2) - BOX_PADDING, 440 - BOX_PADDING, category_text3.get_width() + BOX_PADDING * 2, category_text3.get_height() + BOX_PADDING*2)
 
-square_ui = pygame.Rect((WIDTH/2 - category_text3.get_width()/2) - SQUARE_UI_PAD, 200 - SQUARE_UI_PAD, (SQUARE_UI_PAD*2 + category_text3.get_width()), 300 + category_text3.get_height() + SQUARE_UI_PAD)
-square_ui_inner = pygame.Rect((WIDTH/2 - category_text3.get_width()/2 + INNER_SQUARE_PAD) - SQUARE_UI_PAD, 200 - SQUARE_UI_PAD + INNER_SQUARE_PAD,\
+square_ui = pygame.Rect((WIDTH/2 - category_text3.get_width()/2) - SQUARE_UI_PAD, 240 - SQUARE_UI_PAD, (SQUARE_UI_PAD*2 + category_text3.get_width()), 300 + category_text3.get_height() + SQUARE_UI_PAD)
+square_ui_inner = pygame.Rect((WIDTH/2 - category_text3.get_width()/2 + INNER_SQUARE_PAD) - SQUARE_UI_PAD, 240 - SQUARE_UI_PAD + INNER_SQUARE_PAD,\
  (SQUARE_UI_PAD*2 + category_text3.get_width() - INNER_SQUARE_PAD*2), 300 + category_text3.get_height() + SQUARE_UI_PAD - INNER_SQUARE_PAD*2)
 
 
@@ -133,9 +134,20 @@ def get_button_input(letters, letter_box_index, mouse_click, dashes_drawn):
             letter_x += LETTER_BOX_SPACING
 
 
-def game_win(letters, letter_box_index, screen):
+def game_win(letters, letter_box_index, screen, category_display, RED, wrong_guesses):
     letter_x, letter_y = 100, HEIGHT/2 + 100
     screen.fill((WHITE))
+
+    # Draw stand
+    man = Man()
+    man.draw_stand(screen)
+
+    # Category/Guesses text
+    category_font = pygame.font.SysFont("", 40)
+    category_text = category_font.render(f"Category: {category_display}", True, RED)
+    guesses_text = category_font.render(f"Remaining Guesses: {9 - len(wrong_guesses)}", True, RED)
+    screen.blit(category_text, (80,40))
+    screen.blit(guesses_text, (720 - guesses_text.get_width(),40))
 
     # Draw letters and letter boxes
     for i in range(26):
@@ -162,24 +174,44 @@ def menu(Man):
     pygame.draw.rect(screen, BLACK, square_ui_inner,0,20)
 
     # Draw welcome box
-    pygame.draw.rect(screen, BLACK, welcome_box, 0, 15)
-    screen.blit(welcome_text, (WIDTH/2 - welcome_text.get_width()/2, 50))
+
+    screen.blit(welcome_text, (WIDTH/2 - welcome_text.get_width()/2, 75))
 
     # Draw square ui
     pygame.draw.rect(screen, BLACK, square_ui, 3, 25)
 
     # Draw categories
     pygame.draw.rect(screen, WHITE, category_box1, 0, 20)
-    screen.blit(category_text1, (WIDTH/2 - category_text1.get_width()/2, 200))
+    screen.blit(category_text1, (WIDTH/2 - category_text1.get_width()/2, 240))
     pygame.draw.rect(screen, WHITE, category_box2, 0, 20)
-    screen.blit(category_text2, (WIDTH/2 - category_text2.get_width()/2, 300))
+    screen.blit(category_text2, (WIDTH/2 - category_text2.get_width()/2, 340))
     pygame.draw.rect(screen, WHITE, category_box3, 0, 20)
-    screen.blit(category_text3, (WIDTH/2 - category_text3.get_width()/2, 400))
+    screen.blit(category_text3, (WIDTH/2 - category_text3.get_width()/2, 440))
 
     # Draw hangman
     man = Man()
     man.draw_hangman_menu(screen)
 
+    # Draw dashes
+    dash_x = 185
+    dash_len = 50
+    dash_spacing = 15
+    for i in range(7):
+        dash = pygame.Rect(dash_x, HEIGHT - 50, dash_len, 5)
+        pygame.draw.rect(screen, (RED), dash)
+        dash_x += dash_spacing + dash_len
+
+    # Draw 'HANGMAN'
+    letter_font = pygame.font.SysFont("Ariel", 70)
+    space = dash_len + dash_spacing
+    word = 'HANGMAN'
+    dash_x = 190
+    dash_len = 50
+    dash_spacing = 15
+    for i in range(7):
+        letter = letter_font.render(word[i], True, RED)
+        screen.blit(letter, (dash_x, HEIGHT - 42 - letter.get_height()))
+        dash_x += dash_spacing + dash_len
 
     pygame.display.update()
 
@@ -187,13 +219,13 @@ def menu(Man):
 def menu_box_click(text1, text2, text3, mouse_click):
     mouse_pos = pygame.mouse.get_pos()
     if (mouse_pos[0] > (WIDTH/2 - text1.get_width()/2 - BOX_PADDING) and mouse_pos[0] < (WIDTH/2 + text1.get_width()/2 + BOX_PADDING)) and\
-    (mouse_pos[1] > 200 - BOX_PADDING and mouse_pos[1] < 200 + category_text1.get_height() + BOX_PADDING) and mouse_click == True:
+    (mouse_pos[1] > 240 - BOX_PADDING and mouse_pos[1] < 240 + category_text1.get_height() + BOX_PADDING) and mouse_click == True:
         return 1
     if (mouse_pos[0] > (WIDTH/2 - text2.get_width()/2 - BOX_PADDING) and mouse_pos[0] < (WIDTH/2 + text2.get_width()/2 + BOX_PADDING)) and\
-    (mouse_pos[1] > 300 - BOX_PADDING and mouse_pos[1] < 300 + category_text2.get_height() + BOX_PADDING) and mouse_click == True:
+    (mouse_pos[1] > 340 - BOX_PADDING and mouse_pos[1] < 340 + category_text2.get_height() + BOX_PADDING) and mouse_click == True:
         return 2
     if (mouse_pos[0] > (WIDTH/2 - text3.get_width()/2 - BOX_PADDING) and mouse_pos[0] < (WIDTH/2 + text3.get_width()/2 + BOX_PADDING)) and\
-    (mouse_pos[1] > 400 - BOX_PADDING and mouse_pos[1] < 400 + category_text3.get_height() + BOX_PADDING) and mouse_click == True:
+    (mouse_pos[1] > 440 - BOX_PADDING and mouse_pos[1] < 440 + category_text3.get_height() + BOX_PADDING) and mouse_click == True:
         return 3
 
 
@@ -227,6 +259,28 @@ def draw_correct_guesses(to_be_drawn, screen):
         if isinstance(i, str):
             letter = letter_font.render(i, True, BLACK)
             screen.blit(letter, ((dash_x + dash_len/6) + space * to_be_drawn[index - 1], HEIGHT/2 - 40))
+
+
+def draw_hangman(screen, Man, wrong_guesses):
+    man = Man()
+    if len(wrong_guesses) >= 1:
+        man.draw_head(screen)
+    if len(wrong_guesses) >= 2:
+        man.draw_torso(screen)
+    if len(wrong_guesses) >= 3:
+        man.draw_leftarm(screen)
+    if len(wrong_guesses) >= 4:
+        man.draw_rightarm(screen)
+    if len(wrong_guesses) >= 5:
+        man.draw_leftleg(screen)
+    if len(wrong_guesses) >= 6:
+        man.draw_rightleg(screen)
+    if len(wrong_guesses) >= 7:
+        man.draw_lefteye(screen)
+    if len(wrong_guesses) >= 8:
+        man.draw_righteye(screen)
+    if len(wrong_guesses) >= 9:
+        man.draw_mouth(screen)
 
 
 
@@ -263,6 +317,15 @@ while not game_over:
     if not category:
         menu(Man)
         category = menu_box_click(category_text1, category_text2, category_text3, mouse_click)
+
+        category_display = ""
+        if category == 1:
+            category_display = "Animals"
+        if category == 2:
+            category_display = "Food"
+        if category == 3:
+            category_display = "Geography"
+
         guessword = get_guess_word(wordbank, category)
 
 
@@ -277,7 +340,8 @@ while not game_over:
     # Game window start
     if game_start:
         screen = pygame.display.set_mode((WIDTH, HEIGHT))
-        game_win(letters, letter_box_index, screen)
+        game_win(letters, letter_box_index, screen, category_display, RED, wrong_guesses)
+        draw_hangman(screen, Man, wrong_guesses)
 
         # Draw dashes to the screen
         dashes_drawn = draw_dashes(guessword, screen)
@@ -298,6 +362,45 @@ while not game_over:
             print(f"Wrong guesses: {wrong_guesses}")
             print(f"Guess word len: {len(guessword)}")
             print(word_dict)
+
+        # GAME OVER SCREEN
+        if len(wrong_guesses) == 9:
+            time.sleep(.5)
+            screen.fill((WHITE))
+            draw_hangman(screen, Man, wrong_guesses)
+            man = Man()
+            man.draw_stand(screen)
+            game_over_font = pygame.font.SysFont("Ariel", 125)
+            game_over_text = game_over_font.render('GAME OVER', True, BLACK)
+            screen.blit(game_over_text, (WIDTH/2 - game_over_text.get_width()/2, HEIGHT/10 - game_over_text.get_height()/2))
+            pygame.display.update()
+            time.sleep(5)
+            game_over = True
+
+        # WIN SCREEN
+        if len(correct_guesses)/2 == len(guessword):
+            screen.fill((WHITE))
+            draw_correct_guesses(to_be_drawn, screen)
+            pygame.display.update()
+            draw_dashes(guessword, screen)
+            pygame.display.update()
+            time.sleep(1)
+
+            screen.fill((WHITE))
+
+            # You win text
+            game_over_font = pygame.font.SysFont("Ariel", 100)
+            game_over_text = game_over_font.render('YOU WIN!', True, RED)
+            screen.blit(game_over_text, (WIDTH/2 - game_over_text.get_width()/2, HEIGHT/3 - game_over_text.get_height()/3))
+
+            # Correct word text
+            word_font = pygame.font.SysFont("Ariel", 35)
+            word_text = word_font.render(f"{guessword.capitalize()} is correct!" , True, RED)
+            screen.blit(word_text, (WIDTH//2 - word_text.get_width()/2, HEIGHT//2 - word_text.get_height()/2))
+            pygame.display.update()
+
+            time.sleep(5)
+            game_over = True
 
 
 
